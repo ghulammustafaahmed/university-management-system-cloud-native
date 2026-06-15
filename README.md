@@ -18,13 +18,11 @@ A **production-grade, cloud-native university management system** built with mic
 git clone https://github.com/yourusername/university-management-system.git
 cd university-management-system
 docker-compose up --build
-```
 
 **Default Login Credentials:**
 - Email: `ali@university.edu`
 - Password: `password123`
 
----
 
 ## 🏗️ System Architecture
 
@@ -245,7 +243,6 @@ minikube start
 | `attendance` | Per-session attendance (UNIQUE student+course+date) |
 | `attendance_summary` | Aggregated attendance percentage |
 
----
 
 ## 🔧 Development & Customization
 
@@ -257,20 +254,11 @@ minikube start
 | Changed `.html` template | `docker-compose up --build frontend` |
 | Changed `init.sql` | `docker-compose down -v` then `docker-compose up --build` |
 
-### Removing AI Chatbot (If Present)
 
-Open `frontend/templates/base.html` and delete:
-- `<button class="ai-fab">` element
-- `<div class="ai-panel">` block
-- `sendAI()` / `toggleAI()` JavaScript functions
-
-Then: `docker-compose up --build frontend`
-
----
 
 ## 📁 Project Structure
 
-```
+
 university-management-system/
 ├── auth-service/                 # JWT authentication
 │   ├── Dockerfile
@@ -304,9 +292,9 @@ university-management-system/
 │   └── init.sql                  # Database schema
 ├── docker-compose.yml
 └── README.md
-```
 
----
+
+
 
 ## 👥 Team Members
 
@@ -356,50 +344,11 @@ For any queries regarding this project, please contact the **Department of Elect
 
 ---
 
-**Built with ☁️ by Team CPE4541 — CUST Islamabad | June 2026**
-```
-
----
-
-## How to Use This README
-
-1. **Copy the entire code block above**
-2. **Go to your GitHub repository**
-3. **Click on `README.md`** (or create it if it doesn't exist)
-4. **Click the pencil icon (Edit)**
-5. **Paste the entire content**
-6. **Click "Commit changes"** (green button at the bottom)
-
----
-
-## Optional: Add Badges for Professional Look
-
-You can also add these at the top of your README (already included):
-
-```markdown
 ![Version](https://img.shields.io/badge/version-1.0.0-blue)
 ![Kubernetes](https://img.shields.io/badge/kubernetes-%23326ce5.svg?style=flat&logo=kubernetes&logoColor=white)
 ![Docker](https://img.shields.io/badge/docker-%230db7ed.svg?style=flat&logo=docker&logoColor=white)
 ![Flask](https://img.shields.io/badge/flask-%23000.svg?style=flat&logo=flask&logoColor=white)
 ![MySQL](https://img.shields.io/badge/mysql-4479A1.svg?style=flat&logo=mysql&logoColor=white)
-```
 
----
 
-## Screenshot Preview (What your README will look like)
 
-The README will display:
-- ✅ Badges at the top
-- ✅ Quick start section
-- ✅ Architecture diagram (text-based)
-- ✅ Complete microservices table
-- ✅ Technology stack
-- ✅ Installation options (Docker, Kubernetes, ngrok, WiFi sharing)
-- ✅ Benchmark results table
-- ✅ Database schema
-- ✅ Development commands
-- ✅ Team member credits
-- ✅ SDG alignment
-- ✅ Professional footer
-
-Would you like me to also provide a **separate CONTRIBUTING.md** or **INSTALLATION.md** file?
