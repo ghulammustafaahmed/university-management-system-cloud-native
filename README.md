@@ -243,7 +243,7 @@ minikube start
 | `attendance` | Per-session attendance (UNIQUE student+course+date) |
 | `attendance_summary` | Aggregated attendance percentage |
 
-
+---
 ## 🔧 Development & Customization
 
 ### Rebuilding Individual Services
@@ -255,10 +255,11 @@ minikube start
 | Changed `init.sql` | `docker-compose down -v` then `docker-compose up --build` |
 
 
+---
 
 ## 📁 Project Structure
 
-
+```text
 university-management-system/
 ├── auth-service/                 # JWT authentication
 │   ├── Dockerfile
@@ -292,8 +293,9 @@ university-management-system/
 │   └── init.sql                  # Database schema
 ├── docker-compose.yml
 └── README.md
+```
 
-
+---
 
 
 ## 👥 Team Members
