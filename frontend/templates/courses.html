@@ -1,0 +1,116 @@
+{% extends "base.html" %}
+{% block title %}Courses{% endblock %}
+{% block content %}
+
+<style>
+  .beautiful-card {
+    background: #ffffff; 
+    border-radius: 1.25rem; 
+    box-shadow: 0 4px 12px rgba(0,0,0,0.03); 
+    border: none;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+  }
+  
+  /* Smooth lift effect on hover for desktop */
+  .beautiful-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 24px rgba(0,0,0,0.06);
+  }
+
+  /* Responsive Media Queries for Mobile/Tablets */
+  @media (max-width: 767.98px) {
+    .beautiful-card {
+      border-radius: 1rem; /* Slightly tighter corners on mobile phones */
+    }
+    .catalog-header h4 {
+      font-size: 1.25rem;
+    }
+    .course-title {
+      font-size: 1rem !important;
+    }
+  }
+</style>
+
+<div class="card beautiful-card mb-4">
+  <div class="card-body p-4 catalog-header">
+    <div class="d-flex align-items-center justify-content-between">
+      <div>
+        <h4 class="mb-0 fw-bold" style="color:#1e293b">Course Catalog</h4>
+        <p class="text-muted small mb-0 mt-1">Browse and enroll in available courses</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="row g-3">
+{% if courses and courses is iterable %}
+  {% for c in courses %}
+  <div class="col-md-6 col-xl-4">
+    <div class="card beautiful-card h-100">
+      <div class="card-body p-4 d-flex flex-column justify-content-between">
+        
+        <div>
+          <div class="d-flex align-items-start justify-content-between mb-3">
+            <div style="background:{{ loop.cycle('#eff6ff','#f0fdf4','#fffbeb','#fdf4ff','#fff1f2') }}; border-radius:12px; width:48px; height:48px; display:flex; align-items:center; justify-content:center; font-size:1.3rem; flex-shrink:0;">
+              {{ loop.cycle('💻','🔢','📡','🌐','🧮','📚') }}
+            </div>
+            <span class="badge rounded-pill fw-medium" style="background:#f1f5f9; color:#475569; font-size:.75rem; padding: 0.5rem 0.75rem;">
+              {{ c.credits }} Credits
+            </span>
+          </div>
+
+          <div class="fw-bold mb-1 course-title" style="font-size:1.15rem; color:#1e293b; line-height:1.3;">
+            {{ c.course_name }}
+          </div>
+          <div class="text-muted small mb-3 fw-medium">
+            {{ c.course_code }} · {{ c.department }}
+          </div>
+
+          <div class="small text-secondary mb-1 d-flex align-items-center">
+            <i class="bi bi-person me-2 text-muted"></i>{{ c.instructor }}
+          </div>
+          {% if c.schedule %}
+          <div class="small text-secondary mb-1 d-flex align-items-center">
+            <i class="bi bi-clock me-2 text-muted"></i>{{ c.schedule }}
+          </div>
+          {% endif %}
+          {% if c.room %}
+          <div class="small text-secondary mb-3 d-flex align-items-center">
+            <i class="bi bi-geo-alt me-2 text-muted"></i>{{ c.room }}
+          </div>
+          {% endif %}
+        </div>
+
+        <div class="d-flex align-items-center justify-content-between mt-3 pt-3" style="border-top: 1px solid #f1f5f9;">
+          <div class="small fw-medium text-muted">
+            {{ c.enrolled_count|default(0) }}/{{ c.max_students }} enrolled
+          </div>
+          
+          {% if c.id in enrolled_ids %}
+            <form method="POST" action="{{ url_for('drop', course_id=c.id) }}" class="d-inline">
+              <button class="btn btn-sm fw-bold px-3 py-2" style="background:#fee2e2; color:#991b1b; border-radius:8px; border:none; font-size:0.8rem;">
+                Drop
+              </button>
+            </form>
+          {% else %}
+            <form method="POST" action="{{ url_for('enroll', course_id=c.id) }}" class="d-inline">
+              <button class="btn btn-sm fw-bold px-3 py-2" style="background:#dcfce7; color:#166534; border-radius:8px; border:none; font-size:0.8rem;">
+                Enroll
+              </button>
+            </form>
+          {% endif %}
+        </div>
+
+      </div>
+    </div>
+  </div>
+  {% endfor %}
+{% else %}
+  <div class="col-12 text-center py-5">
+    <i class="bi bi-journal-x fs-1 text-muted"></i>
+    <p class="text-muted mt-2 fw-medium">No courses available.</p>
+  </div>
+{% endif %}
+</div>
+
+{% endblock %}

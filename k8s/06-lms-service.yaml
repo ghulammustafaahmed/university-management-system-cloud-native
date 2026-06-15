@@ -1,0 +1,72 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: lms-service
+  namespace: university
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: lms-service
+  template:
+    metadata:
+      labels:
+        app: lms-service
+    spec:
+      containers:
+      - name: lms-service
+        image: lms-service:latest
+        imagePullPolicy: Never
+        ports:
+        - containerPort: 5003
+        - containerPort: 6003
+        envFrom:
+        - configMapRef:
+            name: uni-config
+        env:
+        - name: DB_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: uni-secret
+              key: DB_PASSWORD
+        readinessProbe:
+          httpGet:
+            path: /health
+            port: 5003
+          initialDelaySeconds: 15
+          periodSeconds: 10
+          failureThreshold: 5
+        volumeMounts:
+        - name: lms-uploads
+          mountPath: /app/uploads # Matches os.getcwd()/uploads context
+        resources:
+          requests:
+            memory: "128Mi"
+            cpu: "100m"
+          limits:
+            memory: "256Mi"
+            cpu: "300m"
+      volumes:
+      - name: lms-uploads
+        hostPath:
+          path: /tmp/university-uploads # Shared spot inside the minikube host node
+          type: DirectoryOrCreate
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: lms-service
+  namespace: university
+spec:
+  selector:
+    app: lms-service
+  type: NodePort
+  ports:
+  - name: http
+    port: 5003
+    targetPort: 5003
+    nodePort: 30003
+  - name: socket
+    port: 6003
+    targetPort: 6003
+    nodePort: 31003 # ✅ FIXED: Explicitly mapped to prevent cluster initialization crashes

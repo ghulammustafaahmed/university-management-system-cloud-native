@@ -1,0 +1,145 @@
+version: '3.8'
+
+services:
+  mysql:
+    image: mysql:8.0
+    container_name: university-mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: rootpassword
+      MYSQL_DATABASE: university_system
+    ports:
+      - "3309:3306"
+    volumes:
+      - mysql-data:/var/lib/mysql
+      - ./scripts/init.sql:/docker-entrypoint-initdb.d/init.sql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - uni-net
+
+  auth-service:
+    build: ./auth-service
+    container_name: auth-service
+    ports: ["5001:5001"]
+    environment:
+      DB_HOST: mysql
+      DB_USER: root
+      DB_PASSWORD: rootpassword
+      DB_NAME: university_system
+      JWT_SECRET_KEY: supersecretkey123
+    depends_on:
+      mysql:
+        condition: service_healthy
+    networks: [uni-net]
+
+  registration-service:
+    build: ./registration-service
+    container_name: registration-service
+    ports: ["5002:5002"]
+    environment:
+      DB_HOST: mysql
+      DB_USER: root
+      DB_PASSWORD: rootpassword
+      DB_NAME: university_system
+      AUTH_SERVICE_URL: http://auth-service:5001
+    depends_on:
+      mysql:
+        condition: service_healthy
+    networks: [uni-net]
+
+  lms-service:
+    build: ./lms-service
+    container_name: lms-service
+    ports: ["5003:5003"]
+    volumes:
+      - ./uploads:/app/uploads
+    environment:
+      DB_HOST: mysql
+      DB_USER: root
+      DB_PASSWORD: rootpassword
+      DB_NAME: university_system
+      AUTH_SERVICE_URL: http://auth-service:5001
+    depends_on:
+      mysql:
+        condition: service_healthy
+    networks: [uni-net]
+
+  result-service:
+    build: ./result-service
+    container_name: result-service
+    ports: ["5004:5004"]
+    environment:
+      DB_HOST: mysql
+      DB_USER: root
+      DB_PASSWORD: rootpassword
+      DB_NAME: university_system
+      AUTH_SERVICE_URL: http://auth-service:5001
+    depends_on:
+      mysql:
+        condition: service_healthy
+    networks: [uni-net]
+
+  attendance-service:
+    build: ./attendance-service
+    container_name: attendance-service
+    ports: ["5005:5005"]
+    environment:
+      DB_HOST: mysql
+      DB_USER: root
+      DB_PASSWORD: rootpassword
+      DB_NAME: university_system
+      AUTH_SERVICE_URL: http://auth-service:5001
+    depends_on:
+      mysql:
+        condition: service_healthy
+    networks: [uni-net]
+
+  profile-service:
+    build: ./profile-service
+    container_name: profile-service
+    ports: ["5006:5006"]
+    environment:
+      DB_HOST: mysql
+      DB_USER: root
+      DB_PASSWORD: rootpassword
+      DB_NAME: university_system
+      AUTH_SERVICE_URL: http://auth-service:5001
+    depends_on:
+      mysql:
+        condition: service_healthy
+    networks: [uni-net]
+
+  frontend:
+    build: ./frontend
+    container_name: frontend
+    ports: ["5000:5000"]
+    environment:
+      SECRET_KEY: university-secret-2024
+      AUTH_SERVICE_URL: http://auth-service:5001
+      REG_SERVICE_URL: http://registration-service:5002
+      LMS_SERVICE_URL: http://lms-service:5003
+      RESULT_SERVICE_URL: http://result-service:5004
+      ATTEND_SERVICE_URL: http://attendance-service:5005
+      PROFILE_SERVICE_URL: http://profile-service:5006
+    depends_on:
+      - auth-service
+      - registration-service
+    networks: [uni-net]
+
+  nginx:
+    build: ./nginx
+    container_name: nginx-proxy
+    ports: ["80:80"]
+    depends_on:
+      - frontend
+    networks: [uni-net]
+
+volumes:
+  mysql-data:
+
+networks:
+  uni-net:
+    driver: bridge

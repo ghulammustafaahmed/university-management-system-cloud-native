@@ -1,0 +1,68 @@
+{% extends "base.html" %}
+
+{% block title %}Assignments{% endblock %}
+
+{% block content %}
+<div class="mb-4">
+  <h4 class="mb-0 fw-bold">Assignments</h4>
+  <p class="text-muted small mb-0">Your pending and past assignments</p>
+</div>
+
+<div class="row g-3">
+  {% if assignments %}
+    
+    {% for a in assignments %}
+    <div class="col-md-6 col-xl-4">
+      <div class="card-modern h-100">
+        <div class="p-4">
+
+          <div class="d-flex justify-content-between align-items-start mb-2">
+            <span class="badge rounded-pill"
+                  style="background:#eff6ff;color:#2563eb;font-size:.75rem">
+              {{ a.course_code }}
+            </span>
+
+            <span class="badge rounded-pill"
+                  style="background:#fef9c3;color:#854d0e;font-size:.75rem">
+              {{ a.max_marks }} marks
+            </span>
+          </div>
+
+          <h6 class="fw-700 mt-2 mb-1">{{ a.title }}</h6>
+
+          <p class="text-muted small mb-3">
+            {{ a.description if a.description else 'No description provided.' }}
+          </p>
+
+          {% if a.file_path %}
+          <div class="mb-3">
+            <a href="/assignments/download/{{ a.file_path }}" ...>
+               class="btn btn-sm btn-outline-primary w-100">
+              <i class="bi bi-download me-2"></i>Download File
+            </a>
+          </div>
+          {% endif %}
+
+          <div class="d-flex align-items-center justify-content-between pt-2 border-top">
+            <div class="small text-muted">
+              <i class="bi bi-calendar3 me-1"></i>Due: {{ a.due_date }}
+            </div>
+
+            <div class="small text-muted">
+              <i class="bi bi-person me-1"></i>{{ a.uploaded_by }}
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+    {% endfor %}
+
+  {% else %}
+    <div class="col-12 text-center py-5">
+      <i class="bi bi-file-earmark-x fs-1 text-muted"></i>
+      <p class="text-muted mt-2">No assignments available yet.</p>
+    </div>
+  {% endif %}
+</div>
+{% endblock %}

@@ -1,0 +1,63 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: attendance-service
+  namespace: university
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: attendance-service
+  template:
+    metadata:
+      labels:
+        app: attendance-service
+    spec:
+      containers:
+      - name: attendance-service
+        image: attendance-service:latest
+        imagePullPolicy: Never
+        ports:
+        - containerPort: 5005
+        - containerPort: 6005
+        envFrom:
+        - configMapRef:
+            name: uni-config
+        env:
+        - name: DB_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: uni-secret
+              key: DB_PASSWORD
+        readinessProbe:
+          httpGet:
+            path: /health
+            port: 5005
+          initialDelaySeconds: 15
+          periodSeconds: 10
+          failureThreshold: 5
+        resources:
+          requests:
+            memory: "128Mi"
+            cpu: "100m"
+          limits:
+            memory: "256Mi"
+            cpu: "300m"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: attendance-service
+  namespace: university
+spec:
+  selector:
+    app: attendance-service
+  type: NodePort
+  ports:
+  - name: http
+    port: 5005
+    targetPort: 5005
+    nodePort: 30005
+  - name: socket
+    port: 6005
+    targetPort: 6005

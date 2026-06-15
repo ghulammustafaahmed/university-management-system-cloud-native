@@ -1,0 +1,46 @@
+{% extends "base.html" %}
+{% block title %}Register{% endblock %}
+{% block extra_css %}
+<style>
+body{background:linear-gradient(135deg,#1a3c6e,#2553a0);min-height:100vh;display:flex;align-items:center;justify-content:center;padding:20px}
+.reg-card{background:#fff;border-radius:24px;box-shadow:0 20px 60px rgba(0,0,0,.25);width:100%;max-width:520px}
+.form-control,.form-select{border:1.5px solid #e2e8f0;border-radius:10px;padding:10px 14px;font-size:.9rem}
+.form-control:focus,.form-select:focus{border-color:#2553a0;box-shadow:0 0 0 3px rgba(37,83,160,.12)}
+.btn-reg{background:linear-gradient(135deg,#1a3c6e,#2553a0);border:none;border-radius:12px;padding:13px;font-weight:600;color:#fff;width:100%}
+</style>
+{% endblock %}
+{% block content %}
+<div class="reg-card mx-auto">
+<div style="background:linear-gradient(135deg,#1a3c6e,#2553a0);padding:28px;border-radius:24px 24px 0 0;text-align:center;color:#fff">
+    <div>
+        <img src="{{ url_for('static', filename='cust.png') }}"
+             alt="CUST Logo" 
+             style="height: 6rem; width: auto; object-fit: contain; vertical-align: middle;">
+    </div>
+    <h5 class="fw-700 mb-0 mt-2" style="margin-top: 8px;">Create Student Account</h5>
+    <p style="opacity:.8;font-size:.875rem;margin:4px 0 0">Join UniPortal today</p>
+</div>
+  <div class="p-4">
+    {% with messages = get_flashed_messages(with_categories=true) %}{% for cat,msg in messages %}<div class="alert alert-{{ cat }}">{{ msg }}</div>{% endfor %}{% endwith %}
+    <form method="POST">
+      <div class="row g-3">
+        <div class="col-12"><label class="form-label small fw-500 text-secondary">Full Name</label><input type="text" name="name" class="form-control" placeholder="Muhammad Ali Hassan" required></div>
+        <div class="col-md-6"><label class="form-label small fw-500 text-secondary">Email</label><input type="email" name="email" class="form-control" placeholder="ali@university.edu" required></div>
+        <div class="col-md-6"><label class="form-label small fw-500 text-secondary">Password</label><input type="password" name="password" class="form-control" placeholder="Min 6 characters" required></div>
+        <div class="col-md-6"><label class="form-label small fw-500 text-secondary">Roll Number</label><input type="text" name="roll_number" class="form-control" placeholder="CS-2024-001" required></div>
+        <div class="col-md-6"><label class="form-label small fw-500 text-secondary">Semester</label>
+          <select name="semester" class="form-select">{% for i in range(1,9) %}<option value="{{ i }}">Semester {{ i }}</option>{% endfor %}</select>
+        </div>
+        <div class="col-12"><label class="form-label small fw-500 text-secondary">Department</label>
+          <select name="department" class="form-select">
+            <option>Computer Science</option><option>Electrical Engineering</option>
+            <option>Mathematics</option><option>Physics</option><option>Business Administration</option><option>Computer Engineering</option>
+          </select>
+        </div>
+        <div class="col-12 mt-2"><button type="submit" class="btn-reg">Create Account <i class="bi bi-arrow-right ms-1"></i></button></div>
+        <div class="col-12 text-center"><p class="text-muted small mb-0">Already have an account? <a href="{{ url_for('login') }}" style="color:#2553a0;font-weight:600">Sign in</a></p></div>
+      </div>
+    </form>
+  </div>
+</div>
+{% endblock %}

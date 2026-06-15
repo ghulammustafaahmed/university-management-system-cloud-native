@@ -1,0 +1,63 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: auth-service
+  namespace: university
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: auth-service
+  template:
+    metadata:
+      labels:
+        app: auth-service
+    spec:
+      containers:
+      - name: auth-service
+        image: auth-service:latest
+        imagePullPolicy: Never
+        ports:
+        - containerPort: 5001
+        - containerPort: 6001
+        envFrom:
+        - configMapRef:
+            name: uni-config
+        env:
+        - name: DB_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: uni-secret
+              key: DB_PASSWORD
+        readinessProbe:
+          httpGet:
+            path: /health
+            port: 5001
+          initialDelaySeconds: 15
+          periodSeconds: 10
+          failureThreshold: 5
+        resources:
+          requests:
+            memory: "128Mi"
+            cpu: "100m"
+          limits:
+            memory: "256Mi"
+            cpu: "300m"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: auth-service
+  namespace: university
+spec:
+  selector:
+    app: auth-service
+  type: NodePort
+  ports:
+  - name: http
+    port: 5001
+    targetPort: 5001
+    nodePort: 30001
+  - name: socket
+    port: 6001
+    targetPort: 6001

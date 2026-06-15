@@ -1,0 +1,64 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: result-service
+  namespace: university
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: result-service
+  template:
+    metadata:
+      labels:
+        app: result-service
+    spec:
+      containers:
+      - name: result-service
+        image: result-service:latest
+        imagePullPolicy: Never
+        ports:
+        - containerPort: 5004
+        - containerPort: 6004
+        envFrom:
+        - configMapRef:
+            name: uni-config
+        env:
+        - name: DB_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: uni-secret
+              key: DB_PASSWORD
+        readinessProbe:
+          httpGet:
+            path: /health
+            port: 5004
+          initialDelaySeconds: 15
+          periodSeconds: 10
+          failureThreshold: 5
+        resources:
+          requests:
+            memory: "128Mi"
+            cpu: "100m"
+          limits:
+            memory: "256Mi"
+            cpu: "300m"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: result-service
+  namespace: university
+spec:
+  selector:
+    app: result-service
+  type: NodePort
+  ports:
+  - name: http
+    port: 5004
+    targetPort: 5004
+    nodePort: 30004
+  - name: socket
+    port: 6004
+    targetPort: 6004
+    nodePort: 31004 # Added explicitly for tracking stability

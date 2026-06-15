@@ -1,0 +1,17 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: uni-config
+  namespace: university
+data:
+  DB_HOST: "mysql"
+  DB_USER: "root"
+  DB_NAME: "university_system"
+  AUTH_SERVICE_URL: "http://auth-service:5001"
+  REG_SERVICE_URL: "http://registration-service:5002"
+  LMS_SERVICE_URL: "http://lms-service:5003"
+  RESULT_SERVICE_URL: "http://result-service:5004"
+  ATTEND_SERVICE_URL: "http://attendance-service:5005"
+  PROFILE_SERVICE_URL: "http://profile-service:5006"
+  JWT_SECRET_KEY: "supersecretkey123"
+  SECRET_KEY: "university-secret-2024"

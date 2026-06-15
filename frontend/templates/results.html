@@ -1,0 +1,195 @@
+{% extends "base.html" %}
+{% block title %}Results{% endblock %}
+{% block content %}
+<div class="d-flex align-items-center justify-content-between mb-4">
+  <div>
+    <h4 class="mb-0 fw-bold">Academic Results</h4>
+    <p class="text-muted small mb-0">Your grades and CGPA summary</p>
+  </div>
+  <div class="text-end">
+    <div style="font-size:2rem;font-weight:800;color:var(--primary)">
+      {{ cgpa }}
+    </div>
+    <div class="text-muted small">CGPA / 4.0</div>
+  </div>
+</div>
+
+<div class="card-modern">
+  <div class="card-header-modern">
+    <i class="bi bi-table"></i> Grade Sheet
+  </div>
+  <div class="accordion" id="resultsAccordion">
+    {% for r in results %}
+    <div class="accordion-item">
+      <h2 class="accordion-header">
+        <button class="accordion-button collapsed"
+                type="button"
+                data-bs-toggle="collapse"
+                data-bs-target="#course{{ r.course_id }}">
+          <div class="d-flex justify-content-between w-100 me-3">
+            <div>
+              <div class="fw-bold">{{ r.course_name }}</div>
+              <div class="text-muted small">{{ r.course_code }}</div>
+            </div>
+            <div class="d-flex gap-3 align-items-center">
+              <span class="badge bg-primary">{{ r.gpa }}</span>
+              <span>{{ r.percentage }}%</span>
+              <span class="grade-badge">{{ r.grade }}</span>
+            </div>
+          </div>
+        </button>
+      </h2>
+      <div id="course{{ r.course_id }}"
+           class="accordion-collapse collapse"
+           data-bs-parent="#resultsAccordion">
+        <div class="accordion-body">
+          
+          {# Extract data safely using the API's breakdown object structure #}
+          {% set quizzes = r.breakdown.get('quiz', {}).get('items', []) %}
+          {% set midterms = r.breakdown.get('midterm', {}).get('items', []) %}
+          {% set assignments = r.breakdown.get('assignment', {}).get('items', []) %}
+          {% set projects = r.breakdown.get('project', {}).get('items', []) %}
+          {% set finals = r.breakdown.get('final', {}).get('items', []) %}
+
+          {# ================= QUIZZES ================= #}
+          <h6 class="text-primary fw-bold">Quizzes (Weight: 20%)</h6>
+          <table class="table table-sm mb-4">
+            <thead>
+              <tr>
+                <th>Assessment</th>
+                <th>Max Marks</th>
+                <th>Obtained Marks</th>
+                <th>Percentage</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for a in quizzes %}
+              <tr>
+                <td>Quiz {{ a.attempt_no }}</td>
+                <td>{{ a.max_marks }}</td>
+                <td>{{ a.marks_obtained }}</td>
+                <td>{{ a.percentage }}%</td>
+              </tr>
+              {% else %}
+              <tr>
+                <td colspan="4" class="text-muted small text-center">No quizzes recorded</td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+
+          {# ================= MIDTERMS ================= #}
+          <h6 class="text-primary fw-bold">Mid Terms (Weight: 20%)</h6>
+          <table class="table table-sm mb-4">
+            <thead>
+              <tr>
+                <th>Assessment</th>
+                <th>Max Marks</th>
+                <th>Obtained Marks</th>
+                <th>Percentage</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for a in midterms %}
+              <tr>
+                <td>Mid Term {{ a.attempt_no }}</td>
+                <td>{{ a.max_marks }}</td>
+                <td>{{ a.marks_obtained }}</td>
+                <td>{{ a.percentage }}%</td>
+              </tr>
+              {% else %}
+              <tr>
+                <td colspan="4" class="text-muted small text-center">No midterms recorded</td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+
+          {# ================= ASSIGNMENTS ================= #}
+          <h6 class="text-primary fw-bold">Assignments (Weight: 10%)</h6>
+          <table class="table table-sm mb-4">
+            <thead>
+              <tr>
+                <th>Assessment</th>
+                <th>Max Marks</th>
+                <th>Obtained Marks</th>
+                <th>Percentage</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for a in assignments %}
+              <tr>
+                <td>Assignment {{ a.attempt_no }}</td>
+                <td>{{ a.max_marks }}</td>
+                <td>{{ a.marks_obtained }}</td>
+                <td>{{ a.percentage }}%</td>
+              </tr>
+              {% else %}
+              <tr>
+                <td colspan="4" class="text-muted small text-center">No assignments recorded</td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+
+          {# ================= PROJECTS ================= #}
+          <h6 class="text-primary fw-bold">Projects (Weight: 10%)</h6>
+          <table class="table table-sm mb-4">
+            <thead>
+              <tr>
+                <th>Assessment</th>
+                <th>Max Marks</th>
+                <th>Obtained Marks</th>
+                <th>Percentage</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for a in projects %}
+              <tr>
+                <td>Project {{ a.attempt_no }}</td>
+                <td>{{ a.max_marks }}</td>
+                <td>{{ a.marks_obtained }}</td>
+                <td>{{ a.percentage }}%</td>
+              </tr>
+              {% else %}
+              <tr>
+                <td colspan="4" class="text-muted small text-center">No projects recorded</td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+
+          {# ================= FINALS ================= #}
+          <h6 class="text-primary fw-bold">Final Exam (Weight: 40%)</h6>
+          <table class="table table-sm mb-4">
+            <thead>
+              <tr>
+                <th>Assessment</th>
+                <th>Max Marks</th>
+                <th>Obtained Marks</th>
+                <th>Percentage</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for a in finals %}
+              <tr>
+                <td>Final Exam (Attempt {{ a.attempt_no }})</td>
+                <td>{{ a.max_marks }}</td>
+                <td>{{ a.marks_obtained }}</td>
+                <td>{{ a.percentage }}%</td>
+              </tr>
+              {% else %}
+              <tr>
+                <td colspan="4" class="text-muted small text-center">No final exam recorded</td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+
+        </div>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+</div>
+{% endblock %}

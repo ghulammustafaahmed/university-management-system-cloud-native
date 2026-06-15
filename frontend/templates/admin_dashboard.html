@@ -1,0 +1,290 @@
+{% extends "base.html" %}
+{% block title %}Admin Panel{% endblock %}
+
+{% block content %}
+
+<div class="mb-4">
+  <h4 class="mb-0 fw-bold">Admin Dashboard</h4>
+  <p class="text-muted small mb-0">System overview and academic management</p>
+</div>
+
+<!-- ================= STATS ================= -->
+<div class="row g-3 mb-4">
+
+  <div class="col-6 col-lg-3">
+    <div class="stat-card">
+      <div class="stat-icon mb-2" style="background:#eff6ff">
+        <i class="bi bi-people-fill text-primary fs-5"></i>
+      </div>
+      <div style="font-size:2rem;font-weight:700">{{ stats.students }}</div>
+      <div class="text-muted small">Total Students</div>
+    </div>
+  </div>
+
+  <div class="col-6 col-lg-3">
+    <div class="stat-card">
+      <div class="stat-icon mb-2" style="background:#f0fdf4">
+        <i class="bi bi-journal-fill fs-5" style="color:#16a34a"></i>
+      </div>
+      <div style="font-size:2rem;font-weight:700">{{ stats.courses }}</div>
+      <div class="text-muted small">Total Courses</div>
+    </div>
+  </div>
+
+</div>
+
+<!-- ================= ATTENDANCE MARKING ================= -->
+<div class="card-modern mb-4">
+
+  <div class="card-header-modern">
+    <i class="bi bi-calendar-check-fill"></i> Mark Attendance
+  </div>
+
+  <div class="p-3">
+
+    <form method="POST" action="{{ url_for('mark_attendance') }}">
+
+      <div class="row g-3">
+
+        <div class="col-md-3">
+          <label class="form-label">Student</label>
+          <select name="student_id" class="form-control" required>
+            <option value="">Select Student</option>
+            {% for s in students %}
+              <option value="{{ s.id }}">{{ s.name }} ({{ s.roll_number }})</option>
+            {% endfor %}
+          </select>
+        </div>
+
+        <div class="col-md-3">
+          <label class="form-label">Course</label>
+          <select name="course_id" class="form-control" required>
+            <option value="">Select Course</option>
+            {% for c in courses %}
+              <option value="{{ c.id }}">{{ c.course_name }}</option>
+            {% endfor %}
+          </select>
+        </div>
+
+        <div class="col-md-3">
+          <label class="form-label">Date</label>
+          <input type="date" name="date" class="form-control" required>
+        </div>
+
+        <div class="col-md-2">
+          <label class="form-label">Status</label>
+          <select name="status" class="form-control">
+            <option value="present">Present</option>
+            <option value="absent">Absent</option>
+            <option value="late">Late</option>
+          </select>
+        </div>
+
+        <div class="col-md-1 d-flex align-items-end">
+          <button class="btn btn-primary w-100">Mark</button>
+        </div>
+
+      </div>
+
+    </form>
+
+  </div>
+</div>
+
+<!-- ================= ASSESSMENT UPLOAD (NEW SYSTEM) ================= -->
+<div class="card-modern mb-4">
+
+  <div class="card-header-modern">
+    <i class="bi bi-bar-chart-fill"></i> Upload Assessment Marks
+  </div>
+
+  <div class="p-3">
+
+    <form method="POST" action="{{ url_for('add_assessment') }}">
+
+      <div class="row g-3">
+
+        <!-- Student -->
+        <div class="col-md-3">
+          <label class="form-label">Student</label>
+          <select name="student_id" class="form-control" required>
+            <option value="">Select Student</option>
+            {% for s in students %}
+              <option value="{{ s.id }}">{{ s.name }} ({{ s.roll_number }})</option>
+            {% endfor %}
+          </select>
+        </div>
+
+        <!-- Course -->
+        <div class="col-md-3">
+          <label class="form-label">Course</label>
+          <select name="course_id" class="form-control" required>
+            <option value="">Select Course</option>
+            {% for c in courses %}
+              <option value="{{ c.id }}">{{ c.course_name }}</option>
+            {% endfor %}
+          </select>
+        </div>
+
+        <!-- Assessment Type (NEW IMPORTANT FIELD) -->
+        <div class="col-md-2">
+          <label class="form-label">Type</label>
+          <select name="assessment_type" class="form-control" required>
+            <option value="quiz">Quiz</option>
+            <option value="midterm">Midterm</option>
+            <option value="assignment">Assignment</option>
+            <option value="project">Project</option>
+            <option value="final">Final</option>
+          </select>
+        </div>
+
+        <!-- Attempt No -->
+        <div class="col-md-1">
+          <label class="form-label">Attempt</label>
+          <input type="number" name="attempt_no" value="1" class="form-control">
+        </div>
+
+        <!-- Marks -->
+        <div class="col-md-1">
+          <label class="form-label">Marks</label>
+          <input type="number" name="marks_obtained" class="form-control" required>
+        </div>
+
+        <!-- Max Marks -->
+        <div class="col-md-1">
+          <label class="form-label">Max</label>
+          <input type="number" name="max_marks" value="100" class="form-control">
+        </div>
+
+        <!-- Submit -->
+        <div class="col-md-1 d-flex align-items-end">
+          <button class="btn btn-success w-100">Save</button>
+        </div>
+
+      </div>
+
+    </form>
+
+  </div>
+</div>
+<!-- ================= Upload Assignment ================= -->
+<div class="card-modern mb-4">
+  <div class="card-header-modern">
+    <i class="bi bi-cloud-arrow-up-fill"></i> Upload Course Assignment
+  </div>
+  <div class="p-3">
+    <form method="POST" action="{{ url_for('admin_add_assignment') }}" enctype="multipart/form-data">
+      <div class="row g-3">
+        
+        <div class="col-md-3">
+          <label class="form-label">Course</label>
+          <select name="course_id" class="form-control" required>
+            <option value="">Select Course</option>
+            {% for c in courses %}
+              <option value="{{ c.id }}">{{ c.course_name }}</option>
+            {% endfor %}
+          </select>
+        </div>
+
+        <div class="col-md-3">
+          <label class="form-label">Title</label>
+          <input type="text" name="title" class="form-control" placeholder="e.g., Programming Assignment 1" required>
+        </div>
+
+        <div class="col-md-2">
+          <label class="form-label">Due Date</label>
+          <input type="date" name="due_date" class="form-control" required>
+        </div>
+
+        <div class="col-md-1">
+          <label class="form-label">Marks</label>
+          <input type="number" name="max_marks" value="100" class="form-control" required>
+        </div>
+
+        <div class="col-md-3">
+          <label class="form-label">Attach File</label>
+          <input type="file" name="file" class="form-control" required>
+        </div>
+
+        <div class="col-12">
+          <label class="form-label">Description (Optional)</label>
+          <textarea name="description" class="form-control" rows="2"></textarea>
+        </div>
+
+        <div class="col-12 text-end">
+          <button type="submit" class="btn btn-primary px-4">Upload Assignment</button>
+        </div>
+
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- ================= STUDENT LIST ================= -->
+<div class="card-modern">
+
+  <div class="card-header-modern">
+    <i class="bi bi-people-fill"></i> All Students
+  </div>
+
+  <div class="table-responsive">
+
+    <table class="table table-hover mb-0" style="font-size:.875rem">
+
+      <thead style="background:#f8fafc;color:#64748b;font-size:.8rem">
+        <tr>
+          <th class="px-4">Name</th>
+          <th>Roll No</th>
+          <th>Department</th>
+          <th>Semester</th>
+          <th>Email</th>
+        </tr>
+      </thead>
+
+      <tbody>
+
+        {% if students and students is iterable %}
+          {% for s in students %}
+          <tr>
+
+            <td class="px-4">
+              <div class="d-flex align-items-center gap-2">
+                <div style="width:30px;height:30px;border-radius:50%;
+                background:var(--primary);color:#fff;display:flex;
+                align-items:center;justify-content:center;font-weight:700;font-size:.8rem">
+                  {{ s.name[0] }}
+                </div>
+                {{ s.name }}
+              </div>
+            </td>
+
+            <td><code>{{ s.roll_number }}</code></td>
+            <td>{{ s.department }}</td>
+
+            <td>
+              <span class="badge rounded-pill"
+                style="background:#eff6ff;color:#2563eb">
+                Sem {{ s.semester }}
+              </span>
+            </td>
+
+            <td class="text-muted">{{ s.email }}</td>
+
+          </tr>
+          {% endfor %}
+        {% else %}
+          <tr>
+            <td colspan="5" class="text-center py-4 text-muted">
+              No students found.
+            </td>
+          </tr>
+        {% endif %}
+
+      </tbody>
+
+    </table>
+
+  </div>
+</div>
+
+{% endblock %}
